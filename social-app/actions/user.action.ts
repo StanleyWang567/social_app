@@ -1,5 +1,5 @@
 "use server";
-
+//holds all the server side db tasks
 import { prisma } from "@/lib/db";
 import { auth, currentUser } from "@clerk/nextjs/server";
 
@@ -34,3 +34,21 @@ export async function syncUser() {
     console.log("Error in syncUser", error);
   }
 }
+
+export async function getUserByClerkId(clerkId:string){ //returns the User object from db.
+  return prisma.user.findUnique({
+    where: {
+      clerkId,
+    },
+    include:{
+      _count:{
+        select:{
+          followers:true,
+          following:true,
+          posts:true,
+        }
+      }
+    }
+  })
+}
+
