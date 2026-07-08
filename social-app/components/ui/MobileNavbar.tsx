@@ -1,7 +1,7 @@
 "use client";
 import { Show, SignInButton, SignOutButton, useAuth, UserButton } from "@clerk/nextjs";
 import React, { useState } from "react";
-import ModeToggle from "./ui/mode-toggle";
+import ModeToggle from "./mode-toggle";
 import Link from "next/link";
 import {
   Sheet,
@@ -12,8 +12,8 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "./ui/sheet";
-import { Button } from "./ui/button";
+} from "./sheet";
+import { Button } from "./button";
 import { Bell, House, LogOut, Rows3, User } from "lucide-react";
 
 function MobileNavbar() {

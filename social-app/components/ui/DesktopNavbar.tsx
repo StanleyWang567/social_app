@@ -3,7 +3,7 @@ import React from "react";
 import ModeToggle from "./mode-toggle";
 import { Button } from "./button";
 import Link from "next/link";
-import { Bell, House, User } from "lucide-react";
+import { Bell, House, LogIn, NotebookPen, User } from "lucide-react";
 import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 
 async function DesktopNavbar() {
@@ -13,7 +13,7 @@ async function DesktopNavbar() {
     /*Need home notification and profile.   md-block ensures it only displays on medium or larger screens.*/
   }
   return (
-    <div className="sm:hidden md:flex gap-5 text-center items-center"> 
+    <div className="hidden md:flex gap-5 text-center items-center">
       <ModeToggle />
       <Show when="signed-in">
         <Link
@@ -45,11 +45,17 @@ async function DesktopNavbar() {
 
       <Show when="signed-out">
         <SignInButton>
-          <Button>Sign in</Button>
+          <Button variant="outline">
+            <LogIn />
+            Sign in
+          </Button>
         </SignInButton>
 
         <SignUpButton>
-          <Button>Sign up</Button>
+          <Button variant="outline">
+            <NotebookPen />
+            Register
+          </Button>
         </SignUpButton>
       </Show>
     </div>
