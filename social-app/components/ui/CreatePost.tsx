@@ -4,6 +4,11 @@ import React, { useState } from "react";
 import { Card, CardContent } from "./card";
 import { Avatar, AvatarImage } from "./avatar";
 import { Textarea } from "./textarea";
+import { Button } from "./button";
+import { Image, Send } from "lucide-react";
+import { create } from "domain";
+import { createPost } from "@/actions/post.action";
+import toast from "react-hot-toast";
 
 function CreatePost() {
   const { user } = useUser(); //current user object.
@@ -12,7 +17,26 @@ function CreatePost() {
   const [isPosting, setIsPosting] = useState(false); //when we click the post button, while it's posting, we will see a spin circle to indicate that it's processing.
   const [showImageUpload, setShowImageUpload] = useState(false); //when we click the photo button, we will see a drop zone component, where we can drag and drop our image.
 
-  const handleSubmit = async () => {};
+  const handleSubmit = async () => {
+    console.log("handling posting...");
+    if (!content.trim() && imageUrl) return;
+
+    setIsPosting(true);
+    try {
+      const result = await createPost(content, imageUrl); //result is an object containing both success and post
+      if (result.success){
+        toast.success("Post Created Successfully!");
+        setContent("");
+        setImage("");
+        setShowImageUpload(false); //resetting the variables
+      }
+    } catch (error) {
+      toast.error("Failed to create post.");
+      
+    } finally{
+      setIsPosting(false);
+    }
+  };
   return (
     <Card className="mb-6">
       <CardContent className="pt-6 w-full">
@@ -23,20 +47,33 @@ function CreatePost() {
             </Avatar>
 
             <Textarea
-            className="min-h-25 resize-none border-none focus-visible:ring-0 p-0 text-base" //by default textarea has a small draggable handle to stretch the box, resize-none disables that handle. 
+              className="min-h-25 resize-none border-none focus-visible:ring-0 p-2 text-base" //by default textarea has a small draggable handle to stretch the box, resize-none disables that handle.
               placeholder="what's on your mind?"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               disabled={isPosting}
             >
-              {" "}
             </Textarea>
           </div>
 
           {/* TODO: handle image uploads*/}
 
-          <div>
-            
+          <div className="flex justify-between border-t pt-4">
+            <div className="flex text-center items-center gap-1">
+              
+              <Button variant="ghost" size="sm" onClick={()=>setShowImageUpload(!showImageUpload)} disabled={isPosting}>
+                <Image />
+                Photo
+              </Button>
+            </div>
+
+            <div className="flex">
+              <Button onClick={handleSubmit} disabled={(!content.trim() && !imageUrl) || isPosting}>
+                {" "}
+                <Send />
+                Post
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>

@@ -8,11 +8,13 @@ import {
   SignUpButton,
   UserButton,
 } from "@clerk/nextjs";
-import { ThemeProvider } from "@/components/ui/theme-provider";
 import Navbar from "@/components/ui/Navbar";
 import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Sidebar from "@/components/ui/Sidebar";
+import { Toast } from "@base-ui/react";
+import { Toaster } from "react-hot-toast";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,39 +37,37 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
-        <ClerkProvider>
-          <html lang="en">
-            <body>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-              >
-                <div className="min-h-screen">
-                  <Navbar />
-                  <main className="py-8">
-                    <div className="max-w-7xl mx-auto px-4">
-                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                        <div className="hidden lg:block lg:col-span-3">
-                          <Sidebar/>
-                        </div>
-
-                        <div className="lg:col-span-9">{children}</div>
-                      </div>
+    <ClerkProvider>
+      <html
+        lang="en"
+        className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+        suppressHydrationWarning
+      >
+        <body className="min-h-full flex flex-col">
+          <ThemeProvider //for light and dark mode. From ShadCN
+                      attribute="class"
+                      defaultTheme="system"
+                      enableSystem
+                      disableTransitionOnChange
+                    >
+            <div className="min-h-screen">
+              <Navbar />
+              <main className="py-8">
+                <div className="max-w-7xl mx-auto px-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div className="hidden lg:block lg:col-span-3">
+                      <Sidebar />
                     </div>
-                  </main>
+
+                    <div className="lg:col-span-9">{children}</div>
+                  </div>
                 </div>
-              </ThemeProvider>
-            </body>
-          </html>
-        </ClerkProvider>
-      </body>
-    </html>
+              </main>
+            </div>
+            <Toaster position="top-center" reverseOrder={false} />
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
