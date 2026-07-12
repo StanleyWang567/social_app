@@ -20,7 +20,7 @@ async function Sidebar() {
     <Card className="items-center">
       <CardContent className="w-full text-center">
         <Avatar className="sm:size-5 md:size-5 lg:size-20 mx-auto">
-          <AvatarImage src="https://github.com/shadcn.png" />
+          <AvatarImage src={user.image ?? "https://github.com/shadcn.png"} />
         </Avatar>
 
         <a

@@ -9,13 +9,15 @@ import { Image, Send } from "lucide-react";
 import { create } from "domain";
 import { createPost } from "@/actions/post.action";
 import toast from "react-hot-toast";
+import { currentUser } from "@clerk/nextjs/server";
 
 function CreatePost() {
-  const { user } = useUser(); //current user object.
+  const { user } = useUser(); //current CLERK user object, not prisma user object. 
   const [content, setContent] = useState("");
   const [imageUrl, setImage] = useState("");
   const [isPosting, setIsPosting] = useState(false); //when we click the post button, while it's posting, we will see a spin circle to indicate that it's processing.
   const [showImageUpload, setShowImageUpload] = useState(false); //when we click the photo button, we will see a drop zone component, where we can drag and drop our image.
+
 
   const handleSubmit = async () => {
     console.log("handling posting...");
@@ -37,13 +39,14 @@ function CreatePost() {
       setIsPosting(false);
     }
   };
+
   return (
     <Card className="mb-6">
       <CardContent className="pt-6 w-full">
         <div className="space-y-4">
           <div className="flex space-x-4">
             <Avatar className="w-10 h-10">
-              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarImage src={user?.imageUrl ?? "https://github.com/shadcn.png"} /> 
             </Avatar>
 
             <Textarea
