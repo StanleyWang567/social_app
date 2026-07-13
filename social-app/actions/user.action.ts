@@ -2,6 +2,8 @@
 //holds all the server side db tasks
 import { prisma } from "@/lib/db";
 import { auth, currentUser } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
+import toast from "react-hot-toast";
 
 export async function syncUser() {
   try {
@@ -77,24 +79,90 @@ export async function getRandomUsers() {
           { NOT: { followers: { some: { followerId: userId } } } },
         ],
       },
-      select:{
+      select: {
         id: true,
         name: true,
-        username:true,
-        image:true,
-        _count:{
-          select:{
-            followers:true,
-          }
-          
-        }
+        username: true,
+        image: true,
+        _count: {
+          select: {
+            followers: true,
+          },
+        },
       },
-      take:3, 
+      take: 3,
     });
 
     return randomUsers;
   } catch (error) {
     console.log("error fetching random users.");
     return [];
+  }
+}
+
+export async function toggleFollow(userId: string) {
+  try {
+    const currentId = await getDbUserId();
+
+    if (currentId === userId) throw new Error("you cannot follow yourself");
+
+    const existingFolows = await prisma.follows.findUnique({
+      where: {
+        followerId_followingId: {
+          followerId: currentId,
+          followingId: userId,
+        },
+      },
+    });
+
+    const targetName = await prisma.user.findFirst({
+      where:{
+        id:userId
+      },
+
+      select:{
+        username:true,
+      }
+    })
+
+    if (existingFolows) {
+      //unfollow
+      await prisma.follows.delete({
+        where: {
+          followerId_followingId: {
+            followerId: currentId,
+            followingId: userId,
+          },
+        },
+      });
+
+      toast.success(`unfollowed ${targetName} successfully.`);
+    } else {
+      //follow
+      await prisma.$transaction([
+        prisma.follows.create({
+          data: {
+            followerId: currentId,
+            followingId: userId,
+          },
+        }),
+
+        prisma.notification.create({
+          data: {
+            type: "FOLLOW",
+            userId: userId,
+            creatorId: currentId,
+          },
+        }),
+      ]);
+
+      toast.success(`followed ${targetName} successfully.`);
+    }
+
+    revalidatePath("/");
+    return { success: true };
+  } catch (error) {
+    console.log("error in toggle follow");
+    return { success: false, error: "Error toggling follow" };
   }
 }

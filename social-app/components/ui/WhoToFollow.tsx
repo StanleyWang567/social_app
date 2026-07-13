@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./card";
 import { Avatar, AvatarImage } from "./avatar";
 import { Separator } from "./separator";
 import { Button } from "./button";
+import FollowButton from "./FollowButton";
 
 async function WhoToFollow() {
   const users = await getRandomUsers();
@@ -39,7 +40,7 @@ async function WhoToFollow() {
               </div>
 
               <div className="ml-auto">
-                <Button variant="secondary">Follow</Button>
+                <FollowButton userId={user.id}/>
               </div>
             </div>
           ))}
