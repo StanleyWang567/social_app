@@ -7,7 +7,7 @@ import {
   toggleLike,
 } from "@/actions/post.action";
 import { getDbUserId } from "@/actions/user.action";
-import { useUser } from "@clerk/nextjs";
+import { SignInButton, SignUpButton, useUser } from "@clerk/nextjs";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { Card, CardContent } from "./card";
@@ -31,6 +31,7 @@ function PostCard({ post, dbUserId }: { post: Post; dbUserId: string | null }) {
     post.likes.some((like) => like.userId === dbUserId),
   ); //check if current user has liked the post or no. If current userId exist in this post's like's userId, then the user has liked the post.
   const [optimisticLikes, setOptimisticLikes] = useState(post._count.likes);
+  const [showComments, setShowComments] = useState(false);
 
   const handleLike = async () => {
     //toggling the like button.
@@ -103,51 +104,73 @@ function PostCard({ post, dbUserId }: { post: Post; dbUserId: string | null }) {
             <div className="flex flex-wrap gap-4 items-center">
               <p className="font-bold text-base">{post.author.name}</p>
 
-                <p className="font-light text-gray-400">
+              <p className="font-light text-gray-400">
                 @{post.author.username}
               </p>
-
 
               <p className="font-light text-gray-400">
                 {formatDistanceToNow(new Date(post.createdAt))} ago
               </p>
-              
 
               <div className="w-full">{post.content}</div>
             </div>
 
             <div className="ml-auto pb-2">
               {dbUserId === post.author.id && (
-              <DeleteAlertDialog
-                isDeleting={isDeleting}
-                onDelete={handleDeleteComment}
-              />
-            )}
+                <DeleteAlertDialog
+                  isDeleting={isDeleting}
+                  onDelete={handleDeleteComment}
+                />
+              )}
             </div>
-            
           </div>
+
+          {/*Comment section, like and comment button*/}
 
           <div>
             <img src={post.image ?? ""} />{" "}
           </div>
 
-          <div className="flex gap-5 items-center text-center">
-            <Button
-              className="flex gap-1 bg-none"
-              onClick={handleLike}
-              disabled={isLiking}
-            >
-              <Heart className="size-4 text-gray-400" /> {post._count.likes}
-            </Button>
-
-            <Button
-              className="flex gap-1 bg-none"
-              onClick={handleAddComment}
-              disabled={isCommenting}
-            >
-              <MessageCircle className="size-4 text-gray-400" />{" "}
-              {post._count.comments}
-            </Button>
+          <div className="items-center text-center">
+            {user ? (
+              <div className="flex gap-3">
+                {" "}
+                <Button
+                  className="flex gap-1 bg-none border-2 border-gray"
+                  onClick={handleLike}
+                  disabled={isLiking}
+                  variant="ghost"
+                >
+                  {hasLiked ? (
+                    <Heart className="size-4 text-gray-400 fill-current" />
+                  ) : (
+                    <Heart className="size-4 text-gray-400" />
+                  )}
+                  {post._count.likes}
+                </Button>
+                <Button
+                  className="flex gap-1 bg-none border-2 border-gray"
+                  onClick={handleAddComment}
+                  disabled={isCommenting}
+                  variant="ghost"
+                >
+                  <MessageCircle className="size-4 text-gray-400" />{" "}
+                  {post._count.comments}
+                </Button>
+              </div>
+            ) : (
+              <div>
+                {" "}
+                <SignInButton oauthFlow="popup" mode="modal">
+                  <Button className="w-full border border-gray-500/50 text-white bg-black/10 hover:bg-gray-800">
+                    Login In
+                  </Button>
+                </SignInButton>{" "}
+                <SignUpButton oauthFlow="popup" mode="modal">
+                  <Button className="w-full">Sign Up</Button>
+                </SignUpButton>
+              </div>
+            )}
           </div>
         </div>
       </CardContent>
