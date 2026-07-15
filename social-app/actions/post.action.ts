@@ -46,6 +46,7 @@ export async function getPosts() {
             name: true,
             image: true,
             username: true,
+            id:true,
           },
         },
 
@@ -83,7 +84,7 @@ export async function getPosts() {
 
     return posts;
   } catch (error) {
-    console.log("Error in getPosts", error);
+    console.log("Error in getPosts: ", error);
     throw new Error("Failed to fetch posts");
   }
 }
@@ -99,12 +100,13 @@ export async function toggleLike(postId: string) {
         id: postId,
       },
 
-      select:{
-        authorId:true,
-      }
+      select: {
+        authorId: true,
+      },
     });
 
-    if(!post) throw new Error("Invalid postId, post doesn't exist(From toggleLike)");
+    if (!post)
+      throw new Error("Invalid postId, post doesn't exist(From toggleLike)");
 
     const alreadyLiked = await prisma.like.findUnique({
       where: {
@@ -151,4 +153,86 @@ export async function toggleLike(postId: string) {
     console.log("Error in toggleLike", error);
     throw new Error("Failed to like/dislike post.");
   }
+}
+
+
+export async function createComment(postId: string, content: string) {
+  try {
+    const userId = await getDbUserId();
+    if (!userId) return;
+
+    if (!content) throw new Error("Content is required.");
+
+    const post = await prisma.post.findFirst({
+      where: {
+        id: postId,
+      },
+    });
+
+    if (!post) throw new Error("Post id doesn't exist.");
+
+    
+    const [comment] = await prisma.$transaction(async (tx) => {
+      const newComment = await tx.comment.create({
+        data: {
+          authorId: userId,
+          content: content,
+          postId: postId,
+        },
+      });
+
+      if (post.authorId !== userId) {
+        await tx.notification.create({
+          data: {
+            userId: post.authorId,
+            creatorId: userId,
+            type: "COMMENT",
+            commentId:newComment.id,
+            postId,
+          },
+        });
+      }
+
+      return [newComment];
+    });
+    
+
+
+
+    revalidatePath(`/`);
+    return {success:true, comment};
+  } catch (error) {
+    console.log("Error in createComment: ", error);
+    throw new Error("Failed to create comment.");
+  }
+}
+
+
+
+export async function deletePost(postId:string){
+  try {
+    const userId = await getDbUserId();
+    if(!userId) return;
+
+    if(postId===userId){
+      throw new Error("You cannot delete a post that doesn't belong to you.");
+    }
+
+    else{
+      await prisma.post.delete({
+        where:{
+          id:postId
+        }
+      })
+    }
+
+    revalidatePath("/");
+    return {success:true}
+
+  } catch (error) {
+    console.log("Error from deletePost: ", error);
+    return { success: false, error: "Failed to delete post" };
+    
+  }
+  
 }
