@@ -25,7 +25,7 @@ async function DesktopNavbar() {
           Home{" "}
         </Link>
         <Link
-          href="/home"
+          href="/Notifications"
           className="rounded-xl p-2 flex gap-2 items-center hover:bg-gray-700"
         >
           {" "}
