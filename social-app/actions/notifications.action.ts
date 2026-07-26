@@ -6,7 +6,7 @@ import { getDbUserId } from "./user.action";
 export async function getNotifications() {
   try {
     const userId = await getDbUserId();
-    if (!userId) return[];
+    if (!userId) return [];
 
     const notifications = await prisma.notification.findMany({
       where: {
@@ -26,7 +26,7 @@ export async function getNotifications() {
           select: {
             content: true,
             image: true,
-            createdAt:true,
+            createdAt: true,
           },
         },
 
@@ -37,6 +37,10 @@ export async function getNotifications() {
           },
         },
       },
+
+      orderBy: {
+        createdAt: "desc", //displaying the neweset notifications.
+      },
     });
 
     return notifications;
@@ -46,50 +50,44 @@ export async function getNotifications() {
   }
 }
 
-export async function markNotficationsAsRead(notificationIds: string[]){
-    try {
-        await prisma.notification.updateMany({
-            where:{
-                id:{
-                    in: notificationIds,
-                },
-            },
+export async function markNotficationsAsRead(notificationIds: string[]) {
+  try {
+    await prisma.notification.updateMany({
+      where: {
+        id: {
+          in: notificationIds,
+        },
+      },
 
-            data:{
-                read:true,
-            }
+      data: {
+        read: true,
+      },
+    });
 
-        })
-
-        return {success:true};
-    } catch (error) {
-        console.log("Failed to mark notification as read.", error);
-        throw new Error("Error in markNotificationsAsRead");
-        
-    }
+    return { success: true };
+  } catch (error) {
+    console.log("Failed to mark notification as read.", error);
+    throw new Error("Error in markNotificationsAsRead");
+  }
 }
 
+export async function markNotficationsAsNotRead(notificationIds: string[]) {
+  try {
+    await prisma.notification.updateMany({
+      where: {
+        id: {
+          in: notificationIds,
+        },
+      },
 
+      data: {
+        read: false,
+      },
+    });
 
-export async function markNotficationsAsNotRead(notificationIds: string[]){
-    try {
-        await prisma.notification.updateMany({
-            where:{
-                id:{
-                    in: notificationIds,
-                },
-            },
-
-            data:{
-                read:false,
-            }
-
-        })
-
-        return {success:true};
-    } catch (error) {
-        console.log("Failed to mark notification as not read.", error);
-        throw new Error("Error in markNotificationsAsNotRead");
-        
-    }
+    return { success: true };
+  } catch (error) {
+    console.log("Failed to mark notification as not read.", error);
+    throw new Error("Error in markNotificationsAsNotRead");
+  }
 }

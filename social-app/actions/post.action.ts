@@ -32,10 +32,6 @@ export async function getPosts() {
     if (!userId) return [];
 
     const posts = await prisma.post.findMany({
-      where: {
-        authorId: userId,
-      },
-
       orderBy: {
         createdAt: "desc", //displaying the latest posts created.
       },

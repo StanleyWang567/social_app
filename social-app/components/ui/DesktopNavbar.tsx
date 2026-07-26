@@ -17,7 +17,7 @@ async function DesktopNavbar() {
       <ModeToggle />
       <Show when="signed-in">
         <Link
-          href="/home"
+          href="/"
           className="rounded-xl p-2 flex gap-2 items-center hover:bg-gray-700"
         >
           {" "}
