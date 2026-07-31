@@ -5,9 +5,14 @@ import { Button } from "./button";
 import Link from "next/link";
 import { Bell, House, LogIn, NotebookPen, User } from "lucide-react";
 import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import { getDbUserId } from "@/actions/user.action";
+import { prisma } from "@/lib/db";
 
 async function DesktopNavbar() {
   const user = await currentUser();
+
+
+  const userName = 
   console.log("user is here:", user);
   {
     /*Need home notification and profile.   md-block ensures it only displays on medium or larger screens.*/
@@ -33,7 +38,7 @@ async function DesktopNavbar() {
           Notifications{" "}
         </Link>
         <Link
-          href="/home"
+          href={`/profile`}
           className="rounded-xl p-2 flex gap-2 items-center hover:bg-gray-700"
         >
           {" "}
