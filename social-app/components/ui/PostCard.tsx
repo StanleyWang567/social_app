@@ -33,21 +33,24 @@ function PostCard({ post, dbUserId }: { post: Post; dbUserId: string | null }) {
     post.likes.some((like) => like.userId === dbUserId),
   ); //check if current user has liked the post or no. If current userId exist in this post's like's userId, then the user has liked the post.
   const [optimisticLikes, setOptimisticLikes] = useState(post._count.likes); //it's called optimistic because it expects the server req will success.
-  const [optimisticComments, setOptimisticComments] = useState(post._count.comments);
+  const [optimisticComments, setOptimisticComments] = useState(
+    post._count.comments,
+  );
   const [showComments, setShowComments] = useState(true);
 
   const handleLike = async () => {
     //toggling the like button.
     if (isLiking) return;
 
-    const previousHasLiked=hasLiked;
+    const previousHasLiked = hasLiked;
 
     try {
       setIsLiking(true);
       setHasLiked((prev) => !prev); //this just inverts the current state of hasLiked.
       setOptimisticLikes((prev) => prev + (hasLiked ? -1 : 1)); //if user hasLiked, then it's a dislike operation, we display prev-1 likes.
       await toggleLike(post.id);
-    } catch (error) { //if error occurs, we reverse changes made by the opstimistic like.
+    } catch (error) {
+      //if error occurs, we reverse changes made by the opstimistic like.
       setOptimisticLikes(post._count.likes);
       setHasLiked(previousHasLiked);
     } finally {
@@ -105,7 +108,7 @@ function PostCard({ post, dbUserId }: { post: Post; dbUserId: string | null }) {
             <Link href={`/profile/${post.author.username}`}>
               <Avatar className="sm:size-5 md:size-5 lg:size-10">
                 <AvatarImage
-                  src={post.author.image ?? "https://github.com/shadcn.png"}
+                  src={post.author.image || "https://github.com/shadcn.png"}
                 />
               </Avatar>
             </Link>
@@ -135,12 +138,13 @@ function PostCard({ post, dbUserId }: { post: Post; dbUserId: string | null }) {
           </div>
 
           {/*Like and comment button*/}
+          {post.image && post.image !== "" && (
+            <div>
+              <img src={post.image} />
+            </div>
+          )}
 
-          <div>
-            <img src={post.image ?? ""} />{" "}
-          </div>
-
-          <div className="items-center text-center  pb-5 border-b-1">
+          <div className="items-center text-center  pb-5 border-b">
             {user ? (
               <div className="flex gap-3">
                 {" "}
@@ -163,7 +167,9 @@ function PostCard({ post, dbUserId }: { post: Post; dbUserId: string | null }) {
                   disabled={isCommenting}
                   variant="ghost"
                 >
-                  <MessageCircle className={`size-4 text-gray-400 ${addComment ? "text-blue-500 fill-blue-500" : ""}`} />{" "}
+                  <MessageCircle
+                    className={`size-4 text-gray-400 ${addComment ? "text-blue-500 fill-blue-500" : ""}`}
+                  />{" "}
                   {optimisticComments}
                 </Button>
               </div>
@@ -182,14 +188,13 @@ function PostCard({ post, dbUserId }: { post: Post; dbUserId: string | null }) {
             )}
           </div>
 
-
           {/*Add Comment*/}
           {addComment && (
             <div>
               <div className="flex gap-3 pb-2 w-full overflow-visible">
                 <Avatar className="w-10 h-10 shrink-0">
                   <AvatarImage
-                    src={user?.imageUrl ?? "https://github.com/shadcn.png"}
+                    src={user?.imageUrl || "https://github.com/shadcn.png"}
                   />
                 </Avatar>
 
@@ -223,7 +228,6 @@ function PostCard({ post, dbUserId }: { post: Post; dbUserId: string | null }) {
             </div>
           )}
 
-
           {/*Comment section*/}
           {addComment && (
             <div>
@@ -235,7 +239,7 @@ function PostCard({ post, dbUserId }: { post: Post; dbUserId: string | null }) {
                         <Avatar className="sm:size-5 md:size-5 lg:size-10">
                           <AvatarImage
                             src={
-                              comment.author.image ??
+                              comment.author.image ||
                               "https://github.com/shadcn.png"
                             }
                           />

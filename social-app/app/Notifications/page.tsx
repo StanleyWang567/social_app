@@ -61,7 +61,7 @@ function NotificationsPage() {
                 <div key={notification.id} className="p-1">
                   <div className="flex gap-3 border-b border-gray-700 pb-2">
                     <Avatar>
-                      <AvatarImage src={notification.creator.image || ""} />
+                      <AvatarImage src={notification.creator.image || "https://github.com/shadcn.png"} />
                       <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
 
@@ -86,7 +86,7 @@ function NotificationsPage() {
                       </div>
 
                       {
-                        notification.post && (<div className="pt-2 pb-2 space-y-3"> {notification.post.image && (<Image src={notification.post.image || ""} alt={"post image"}/>)}
+                        notification.post && (<div className="pt-2 pb-2 space-y-3"> {notification.post.image && (<Image src={notification.post.image || "https://github.com/shadcn.png"} alt={"post image"}/>)}
                         <div className="p-2 rounded-xl bg-gray-400/10 text-gray-400">{notification.post.content}</div>
 
                             {notification.comment && (<div className="p-2 rounded-xl bg-gray-400/10">{notification.comment.content}</div>)}

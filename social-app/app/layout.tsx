@@ -16,6 +16,7 @@ import { Toast } from "@base-ui/react";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -30,6 +31,8 @@ export const metadata: Metadata = {
   title: "Social app",
   description: "A modern media social applicaton built with Next.js",
 };
+
+
 
 export default function RootLayout({
   children,

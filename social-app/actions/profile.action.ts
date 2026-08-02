@@ -1,3 +1,4 @@
+"use server"
 import { prisma } from "@/lib/db";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
@@ -6,12 +7,24 @@ import { getDbUserId } from "./user.action";
 
 export async function getProfileByUsername(username: string) {
   try {
-    const user = await currentUser();
-    if (!user) throw new Error("User not logged in.");
-
     const dbUser = await prisma.user.findFirst({
-      where: {
-        username: username,
+      where: { username: username },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        bio: true,
+        image: true,
+        location: true,
+        website: true,
+        createdAt: true,
+        _count: {
+          select: {
+            followers: true,
+            following: true,
+            posts: true,
+          },
+        },
       },
     });
 
@@ -20,6 +33,7 @@ export async function getProfileByUsername(username: string) {
     return dbUser;
   } catch (error) {
     console.log("Error from getUserByUsername in profile.action.ts:", error);
+    throw error;
   }
 }
 

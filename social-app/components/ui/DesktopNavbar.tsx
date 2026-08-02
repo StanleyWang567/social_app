@@ -38,7 +38,7 @@ async function DesktopNavbar() {
           Notifications{" "}
         </Link>
         <Link
-          href={`/profile`}
+          href={`/profile/${user?.username ?? user?.emailAddresses[0].emailAddress.split("@")[0]}`} //In Clerk, emialAddresses[] contains an array of objects, not an array of strings.
           className="rounded-xl p-2 flex gap-2 items-center hover:bg-gray-700"
         >
           {" "}

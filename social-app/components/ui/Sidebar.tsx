@@ -23,12 +23,12 @@ async function Sidebar() {
           <AvatarImage src={user.image ?? "https://github.com/shadcn.png"} />
         </Avatar>
 
-        <a
+        <Link
           className="font-bold text-xl pt-2 hover:text-gray-500"
           href="/profile"
         >
           {user.name}
-        </a>
+        </Link>
 
         <div className="text-sm pt-1 text-gray-400">{user.username}</div>
         <div className="text-md pt-3 text-gray-400 pb-2">
