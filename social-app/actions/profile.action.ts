@@ -1,4 +1,4 @@
-"use server"
+"use server";
 import { prisma } from "@/lib/db";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
@@ -7,7 +7,11 @@ import { getDbUserId } from "./user.action";
 
 export async function getProfileByUsername(username: string) {
   try {
-    const dbUser = await prisma.user.findFirst({
+    if (!username || typeof username !== "string") {
+      throw new Error("Invalid or missing username parameter.");
+    }
+
+    const dbUser = await prisma.user.findUnique({
       where: { username: username },
       select: {
         id: true,
@@ -177,10 +181,8 @@ export async function updateProfile(formData: FormData) {
   }
 }
 
-
-
-
-export async function isFollowing(userId: string) {  //checks if current user is following the specified user, if so then return true. Used for visiting other people profile. 
+export async function isFollowing(userId: string) {
+  //checks if current user is following the specified user, if so then return true. Used for visiting other people profile.
   try {
     const currentUserId = await getDbUserId();
     if (!currentUserId) return false;

@@ -32,7 +32,7 @@ async function Sidebar() {
 
         <div className="text-sm pt-1 text-gray-400">{user.username}</div>
         <div className="text-md pt-3 text-gray-400 pb-2">
-          {user.bio} Placeholder{" "}
+          {user.bio} {" "}
         </div>
 
         <Separator></Separator>
