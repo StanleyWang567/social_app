@@ -77,7 +77,7 @@ function ProfilePageClient({
   };
 
   const handleFollow = async () => {
-    if (!currentUser) return;
+    if (!currentUser) return;//checks if authenticated or no
 
     try {
       setIsUpdatingFollow(true);
